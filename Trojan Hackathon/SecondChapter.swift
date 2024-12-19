@@ -84,7 +84,7 @@ struct SecondChapter: View {
                 }
             }
             .navigationDestination(isPresented: $goesToGame1) {
-                TypingView(hardMode: self.hardMode ?? false)
+                FicshCopy()
             }
         }
     }
