@@ -9,13 +9,23 @@ import SwiftUI
 
 struct ContentView: View { //hi
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            NavigationLink(destination: FirstChapter()){ //destination
+                ZStack{
+                    Rectangle()
+                        .foregroundStyle(Color.black)
+                        .edgesIgnoringSafeArea(.all)
+                    VStack {
+                        Text("Adventures of Odysseus")
+                            .foregroundStyle(.white)
+                            .font(.title)
+                        Spacer()
+                    }
+                    Image("Odysseus")
+                }
+                .padding()
+            }
         }
-        .padding()
     }
 }
 
