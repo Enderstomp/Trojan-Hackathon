@@ -9,6 +9,7 @@ import SwiftUI
 struct TypingView: View {
     var hardMode: Bool
     
+    @State var goToSecondView: Bool = false
     @State var correct = 0
     @State var wrong = 0
     @State var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -37,47 +38,52 @@ struct TypingView: View {
     }
     
     var body: some View {
-        VStack {
-            Text("\(thoseWhoKnowCountdown)")
-            Text(currentWord).font(.largeTitle)
-            Text("\(countdown)").font(.title)
-            TextField("Enter something", text: $enteredWord).onSubmit {
-                if (enteredWord == currentWord){
-                    correct += 1
-                } else {
-                    wrong += 1
-                }
-                timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-                countdown = if hardMode { 3 } else { 5 }
-                enteredWord = ""
-                currentWord = words.randomElement()!
-                isFieldFocused = true
-            }.multilineTextAlignment(.center)
-            .textFieldStyle(.roundedBorder)
-            .focused($isFieldFocused)
-            .autocorrectionDisabled()
-            Text("\(correct) \(wrong)")
+        NavigationStack{
+            VStack {
+                Text("\(thoseWhoKnowCountdown)")
+                Text(currentWord).font(.largeTitle)
+                Text("\(countdown)").font(.title)
+                TextField("Enter something", text: $enteredWord).onSubmit {
+                    if (enteredWord == currentWord){
+                        correct += 1
+                    } else {
+                        wrong += 1
+                    }
+                    timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+                    countdown = if hardMode { 3 } else { 5 }
+                    enteredWord = ""
+                    currentWord = words.randomElement()!
+                    isFieldFocused = true
+                }.multilineTextAlignment(.center)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($isFieldFocused)
+                    .autocorrectionDisabled()
+                Text("\(correct) \(wrong)")
                 
-        }.onReceive(timer) { time in
-            if countdown > 1 {
-                countdown -= 1
-            } else {
-                if (enteredWord == currentWord){
-                    correct += 1
+            }.onReceive(timer) { time in
+                if countdown > 1 {
+                    countdown -= 1
                 } else {
-                    wrong += 1
+                    if (enteredWord == currentWord){
+                        correct += 1
+                    } else {
+                        wrong += 1
+                    }
+                    enteredWord = ""
+                    currentWord = words.randomElement()!
+                    countdown = if hardMode { 3 } else { 5 }
                 }
-                enteredWord = ""
-                currentWord = words.randomElement()!
-                countdown = if hardMode { 3 } else { 5 }
+            }.onReceive(thoseWhoKnowTimer) { time in
+                if thoseWhoKnowCountdown > 0 {
+                    thoseWhoKnowCountdown -= 1
+                } else {
+                    goToSecondView = true
+                    print(correct - wrong)
+                }
             }
-        }.onReceive(thoseWhoKnowTimer) { time in
-            if thoseWhoKnowCountdown > 0 {
-                thoseWhoKnowCountdown -= 1
-            } else {
-                // timer == 0 code OWEN LOOK HERE
-                print(correct - wrong)
-            }
+        }
+        .navigationDestination(isPresented: $goToSecondView) {
+            SecondChapter()
         }
     }
 }
